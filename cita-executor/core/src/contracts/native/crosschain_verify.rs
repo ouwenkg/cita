@@ -16,7 +16,6 @@ use crate::cita_executive::VmExecParams;
 use crate::contracts::{
     native::factory::Contract, solc::ChainManagement, tools::method as method_tools,
 };
-// use crate::state::StateProof;
 use cita_types::{Address, H256, U256};
 use core::header::Header;
 use core::libchain::chain::TxProof;
@@ -25,6 +24,7 @@ use ethabi;
 use crate::storage::Map;
 use crate::types::context::Context;
 use crate::types::errors::NativeError;
+use crate::types::state_proof::StateProof;
 use cita_vm::evm::DataProvider;
 use cita_vm::evm::InterpreterResult;
 
@@ -202,108 +202,107 @@ impl CrossChainVerify {
 
     fn verify_state(
         &mut self,
-        _params: &VmExecParams,
-        _data_provider: &mut DataProvider,
+        params: &VmExecParams,
+        data_provider: &mut DataProvider,
     ) -> Result<InterpreterResult, NativeError> {
-        unimplemented!()
-        // let gas_cost = U256::from(10000);
-        // if params.gas < gas_cost {
-        //     return Err(NativeError::Internal("out of gas".to_string()));
-        // }
-        // let gas_left = params.gas - gas_cost;
+        let gas_cost = U256::from(10000);
+        if params.gas < gas_cost {
+            return Err(NativeError::Internal("out of gas".to_string()));
+        }
+        let gas_left = params.gas - gas_cost;
 
-        // if params.data.is_none() {
-        //     return Err(NativeError::Internal("no data".to_string()));
-        // }
+        if params.data.is_none() {
+            return Err(NativeError::Internal("no data".to_string()));
+        }
 
-        // let data = params.data.to_owned().unwrap();
-        // trace!("data = {:?}", data);
-        // let tokens = vec![
-        //     ethabi::ParamType::Uint(32),
-        //     ethabi::ParamType::Uint(64),
-        //     ethabi::ParamType::Bytes,
-        // ];
+        let data = params.data.to_owned().unwrap();
+        trace!("data = {:?}", data);
+        let tokens = vec![
+            ethabi::ParamType::Uint(32),
+            ethabi::ParamType::Uint(64),
+            ethabi::ParamType::Bytes,
+        ];
 
-        // let result = ethabi::decode(&tokens, &data[4..]);
-        // if result.is_err() {
-        //     return Err(NativeError::Internal("decode failed".to_string()));
-        // }
-        // let mut decoded = result.unwrap();
-        // trace!("decoded = {:?}", decoded);
+        let result = ethabi::decode(&tokens, &data[4..]);
+        if result.is_err() {
+            return Err(NativeError::Internal("decode failed".to_string()));
+        }
+        let mut decoded = result.unwrap();
+        trace!("decoded = {:?}", decoded);
 
-        // let result = decoded.remove(0).to_uint();
-        // if result.is_none() {
-        //     return Err(NativeError::Internal("decode 1th param failed".to_string()));
-        // }
-        // let chain_id = U256::from_big_endian(&result.unwrap());
-        // trace!("chain_id = {}", chain_id);
+        let result = decoded.remove(0).to_uint();
+        if result.is_none() {
+            return Err(NativeError::Internal("decode 1th param failed".to_string()));
+        }
+        let chain_id = U256::from_big_endian(&result.unwrap());
+        trace!("chain_id = {}", chain_id);
 
-        // let result = decoded.remove(0).to_uint();
-        // if result.is_none() {
-        //     return Err(NativeError::Internal("decode 2nd param failed".to_string()));
-        // }
-        // let block_number = U256::from_big_endian(&result.unwrap()).low_u64();
-        // trace!("block_number = {}", block_number);
+        let result = decoded.remove(0).to_uint();
+        if result.is_none() {
+            return Err(NativeError::Internal("decode 2nd param failed".to_string()));
+        }
+        let block_number = U256::from_big_endian(&result.unwrap()).low_u64();
+        trace!("block_number = {}", block_number);
 
-        // let result = self.state_roots.get_array(&chain_id).unwrap().get(
-        //     data_provider,
-        //     &params.code_address.unwrap(),
-        //     block_number,
-        // );
-        // if result.is_err() {
-        //     return Err(NativeError::Internal("get state root failed".to_string()));
-        // }
-        // let result1 = self.state_roots.get_array(&chain_id).unwrap().get(
-        //     data_provider,
-        //     &params.code_address.unwrap(),
-        //     block_number + 1,
-        // );
-        // if result1.is_err() {
-        //     return Err(NativeError::Internal(
-        //         "get next state root failed".to_string(),
-        //     ));
-        // }
-        // let state_root: H256 = result.unwrap().into();
-        // trace!("state_root = {:?}", state_root);
-        // let next_state_root: H256 = result1.unwrap().into();
-        // trace!("next_state_root = {:?}", next_state_root);
-        // if state_root == H256::zero() || next_state_root == H256::zero() {
-        //     return Err(NativeError::Internal(
-        //         "state root have not confirmed".to_string(),
-        //     ));
-        // }
+        let result = self.state_roots.get_array(&chain_id).unwrap().get(
+            data_provider,
+            &params.code_address.unwrap(),
+            block_number,
+        );
+        if result.is_err() {
+            return Err(NativeError::Internal("get state root failed".to_string()));
+        }
+        let result1 = self.state_roots.get_array(&chain_id).unwrap().get(
+            data_provider,
+            &params.code_address.unwrap(),
+            block_number + 1,
+        );
+        if result1.is_err() {
+            return Err(NativeError::Internal(
+                "get next state root failed".to_string(),
+            ));
+        }
+        let state_root: H256 = result.unwrap().into();
+        trace!("state_root = {:?}", state_root);
+        let next_state_root: H256 = result1.unwrap().into();
+        trace!("next_state_root = {:?}", next_state_root);
+        if state_root == H256::zero() || next_state_root == H256::zero() {
+            return Err(NativeError::Internal(
+                "state root have not confirmed".to_string(),
+            ));
+        }
 
-        // let result = decoded.remove(0).to_bytes();
-        // if result.is_none() {
-        //     return Err(NativeError::Internal("decode 3rd param failed".to_string()));
-        // }
-        // let state_proof_bytes = result.unwrap();
-        // trace!("state_proof_bytes = {:?}", state_proof_bytes);
+        let result = decoded.remove(0).to_bytes();
+        if result.is_none() {
+            return Err(NativeError::Internal("decode 3rd param failed".to_string()));
+        }
+        let state_proof_bytes = result.unwrap();
+        trace!("state_proof_bytes = {:?}", state_proof_bytes);
 
-        // let state_proof = StateProof::from_bytes(&state_proof_bytes);
-        // let maybe_val = state_proof.verify(state_root);
-        // if maybe_val.is_none() {
-        //     return Err(NativeError::Internal(
-        //         "state proof verify failed".to_string(),
-        //     ));
-        // }
-        // let val = maybe_val.unwrap();
-        // trace!("val = {:?}", val);
+        let state_proof = StateProof::from_bytes(&state_proof_bytes);
+        let maybe_val = state_proof.verify(state_root); // should return a true, of false
+        if maybe_val.is_none() {
+            return Err(NativeError::Internal(
+                "state proof verify failed".to_string(),
+            ));
+        }
+        let val = maybe_val.unwrap();
+        trace!("val = {:?}", val);
 
-        // let tokens = vec![
-        //     ethabi::Token::Address((*state_proof.address()).into()),
-        //     ethabi::Token::Uint((*state_proof.key()).into()),
-        //     ethabi::Token::Uint(val.into()),
-        // ];
-        // let result = ethabi::encode(&tokens);
-        // trace!("encoded {:?}", result);
+        let tokens = vec![
+            ethabi::Token::Address((*state_proof.address()).into()),
+            ethabi::Token::Uint((*state_proof.key()).into()),
+            ethabi::Token::Uint(val.into()),
+        ];
+        let result = ethabi::encode(&tokens);
+        trace!("encoded {:?}", result);
 
-        // self.output = result;
-        // Ok(InterpreterResult::Normal(
-        //     self.output.clone(),
-        //     gas_left.low_u64(),
-        //     vec![],
-        // ))
+        self.output = result;
+        Ok(InterpreterResult::Normal(
+            self.output.clone(),
+            gas_left.low_u64(),
+            vec![],
+        ))
     }
 
     fn verify_block_header(
@@ -464,4 +463,14 @@ impl CrossChainVerify {
             vec![],
         ))
     }
+
+    // pub fn verify_state_proof(
+    //     &self,
+    //     state_root: H256,
+    //     state_proof: StateProof,
+    //     data_provider: &mut DataProvider,
+    // ) -> Option<H256> {
+    //     let state_provider = data_provider.get_state_provider();
+    //     state_provider.verify_proof(state_root, state_proof.address(), state_proof.account_proof())
+    // }
 }

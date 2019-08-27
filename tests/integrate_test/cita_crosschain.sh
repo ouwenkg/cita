@@ -110,7 +110,7 @@ function txtool_run () {
     local chain=$1
     shift 1
     cd "${chain}tool/txtool"
-    python3 "$@" 2>/dev/null
+    python3 "$@"
     cd ../..
 }
 
@@ -155,7 +155,7 @@ function deploy_contract () {
     local solfile="$2"
     local extra="$3"
     local code="$(solc --allow-paths "${CONTRACT_LIBS_DIR}" \
-        --bin "${solfile}" 2>/dev/null | tail -1)${extra}"
+        --bin "${solfile}"  | tail -1)${extra}"
     txtool_run ${chain} make_tx.py --privkey "${PKEY}" --code "${code}"
     txtool_run ${chain} send_tx.py
     txtool_run ${chain} get_receipt.py --forever true
@@ -520,7 +520,7 @@ function main () {
 
     title "Register side chain ..."
     CMC_ABI=$(solc --allow-paths "${CONTRACT_LIBS_DIR}" \
-        --combined-json abi ${CMC} 2>/dev/null \
+        --combined-json abi ${CMC}  \
         | sed "s@${CMC}:@@g" \
         | json_get '.contracts.ChainManager.abi')
 
