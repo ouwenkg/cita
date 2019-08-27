@@ -27,7 +27,7 @@ error =  { git = "https://github.com/cryptape/cita-common.git", branch = "develo
 proof = { git = "https://github.com/cryptape/cita-common.git", branch = "develop" }
 jsonrpc-types = { git = "https://github.com/cryptape/cita-common.git", branch = "develop" }
 cita-database = { git = "https://github.com/cryptape/cita-database.git", branch = "develop" }
-cita-vm = { git = "https://github.com/cryptape/cita-vm.git", branch = "cita" }
+cita-vm = { git = "https://github.com/ouwenkg/cita-vm.git", branch = "cita" }
 
 [build-dependencies]
 util = { git = "https://github.com/cryptape/cita-common.git", branch = "develop" }
