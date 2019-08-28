@@ -20,4 +20,5 @@ mod simple_storage;
 #[cfg(feature = "privatetx")]
 mod zk_privacy;
 
+pub use crosschain_verify::CrossChainVerify;
 pub use factory::Contract;

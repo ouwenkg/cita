@@ -37,6 +37,10 @@ use crate::types::log::Log;
 use crate::types::transaction::{Action, SignedTransaction};
 use ethbloom::{Bloom, Input as BloomInput};
 
+use crate::contracts::native::CrossChainVerify;
+use crate::types::reserved_addresses;
+use std::str::FromStr;
+
 ///amend the abi data
 const AMEND_ABI: u32 = 1;
 ///amend the account code
@@ -524,7 +528,54 @@ impl<'a, B: DB + 'static> CitaExecutive<'a, B> {
 
     fn call(&mut self, params: &VmExecParams) -> Result<ExecutedResult, ExecutionError> {
         // Check and call Native Contract.
-        if let Some(mut native_contract) = self
+        if params.code_address.unwrap()
+            == Address::from_str(reserved_addresses::NATIVE_CROSS_CHAIN_VERIFY).unwrap()
+        {
+            self.prepaid(&params.sender, params.gas, params.gas_price, params.value)?;
+            // Backup used in case of running out of gas
+            self.state_provider.borrow_mut().checkpoint();
+            // At first, transfer value to destination.
+            if self.payment_required()
+                && self
+                    .transfer_balance(&params.sender, &params.to_address.unwrap(), params.value)
+                    .is_err()
+            {
+                // Discard the checkpoint
+                self.state_provider.borrow_mut().revert_checkpoint();
+                return Err(ExecutionError::Internal(
+                    "Transfer balance failed while calling native contract.".to_string(),
+                ));
+            }
+
+            let store = VmSubState::default();
+            let store = Arc::new(RefCell::new(store));
+            let mut vm_data_provider = DataProvider::new(
+                self.block_provider.clone(),
+                self.state_provider.clone(),
+                store,
+            );
+
+            let mut crosschain_verify = CrossChainVerify::default();
+            let result = match crosschain_verify.exec(params, &mut vm_data_provider) {
+                Ok(ret) => {
+                    // Discard the checkpoint
+                    self.state_provider.borrow_mut().discard_checkpoint();
+                    let mut result = build_result_with_ok(params.gas, ret);
+                    result.is_evm_call = false;
+                    result
+                }
+                Err(e) => {
+                    // If error, revert the checkpoint
+                    self.state_provider.borrow_mut().revert_checkpoint();
+
+                    let mut result = ExecutedResult::default();
+                    result.exception = Some(ExecutedException::NativeContract(e));
+                    result.is_evm_call = false;
+                    result
+                }
+            };
+            Ok(result)
+        } else if let Some(mut native_contract) = self
             .native_factory
             .new_contract(params.code_address.unwrap())
         {

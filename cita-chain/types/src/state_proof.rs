@@ -37,35 +37,40 @@ impl StateProof {
     }
 
     // FixMe: The implementation should be finished while fixing cross chain
-    pub fn verify(&self, _state_root: H256) -> Option<H256> {
-        // let state = State();
-        // state.verify_proof();
+    // pub fn verify(&self, _state_root: H256) -> Option<H256> {
+    //     // let state = State();
+    //     // state.verify_proof();
 
-        // let trie = PatriciaTrie::new(db, codec);
-        // trie.verify_proof();
-        // trie.verify_proof();
+    //     // let trie = PatriciaTrie::new(db, codec);
+    //     // trie.verify_proof();
+    //     // trie.verify_proof();
 
-        // trie::triedb::verify_value_proof(
-        //     &self.address,
-        //     state_root,
-        //     &self.account_proof,
-        //     Account::from_rlp,
-        // )
-        // .and_then(|a| a.verify_value_proof(&self.key, &self.value_proof))
-        // None
-        Some(H256::from(1))
+    //     // trie::triedb::verify_value_proof(
+    //     //     &self.address,
+    //     //     state_root,
+    //     //     &self.account_proof,
+    //     //     Account::from_rlp,
+    //     // )
+    //     // .and_then(|a| a.verify_value_proof(&self.key, &self.value_proof))
+    //     // None
+    //     Some(H256::from(1))
+
+    // }
+
+    pub fn address(&self) -> Address {
+        self.address
     }
 
-    pub fn address(&self) -> &Address {
-        &self.address
+    pub fn account_proof(&self) -> Vec<Bytes> {
+        self.account_proof.clone()
     }
 
-    pub fn account_proof(&self) -> &Vec<Bytes> {
-        &self.account_proof
+    pub fn key(&self) -> H256 {
+        self.key
     }
 
-    pub fn key(&self) -> &H256 {
-        &self.key
+    pub fn value_proof(&self) -> Vec<Bytes> {
+        self.value_proof.clone()
     }
 
     #[cfg(test)]

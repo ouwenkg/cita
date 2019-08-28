@@ -13,12 +13,12 @@
 // limitations under the License.
 
 use std::collections::HashMap;
-use std::str::FromStr;
+// use std::str::FromStr;
 
 use crate::cita_executive::VmExecParams;
 use crate::types::context::Context;
 use crate::types::errors::NativeError;
-use crate::types::reserved_addresses;
+// use crate::types::reserved_addresses;
 
 use cita_types::Address;
 use cita_vm::evm::DataProvider;
@@ -80,17 +80,17 @@ impl Factory {
 
 impl Default for Factory {
     fn default() -> Self {
-        let mut factory = Factory {
+        let factory = Factory {
             contracts: HashMap::new(),
         };
         // here we register contracts with addresses defined in genesis.json.
-        {
-            use super::crosschain_verify::CrossChainVerify;
-            factory.register(
-                Address::from_str(reserved_addresses::NATIVE_CROSS_CHAIN_VERIFY).unwrap(),
-                Box::new(CrossChainVerify::default()),
-            );
-        }
+        // {
+        //     use super::crosschain_verify::CrossChainVerify;
+        //     factory.register(
+        //         Address::from_str(reserved_addresses::NATIVE_CROSS_CHAIN_VERIFY).unwrap(),
+        //         Box::new(CrossChainVerify::default()),
+        //     );
+        // }
         #[cfg(test)]
         {
             use super::simple_storage::SimpleStorage;

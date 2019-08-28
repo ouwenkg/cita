@@ -238,7 +238,7 @@ impl Array {
         Ok(len.low_u64())
     }
 
-    pub fn get_array(self: &mut Self, index: u64) -> Array {
+    pub fn get_array(self: &Self, index: u64) -> Array {
         Array::new(self.key(index))
     }
     pub fn get_map(self: &mut Self, index: u64) -> Map {
@@ -319,7 +319,7 @@ impl Map {
         Ok(*Scalar::new(self.key(key)?).get_bytes(data_provider, addr)?)
     }
 
-    pub fn get_array<Key>(self: &mut Self, key: &Key) -> Result<Array, NativeError>
+    pub fn get_array<Key>(self: &Self, key: &Key) -> Result<Array, NativeError>
     where
         Key: Serialize,
     {

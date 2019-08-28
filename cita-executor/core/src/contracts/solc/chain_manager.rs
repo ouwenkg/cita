@@ -19,8 +19,12 @@ use std::str::FromStr;
 use crate::contracts::tools::{decode as decode_tools, method as method_tools};
 use crate::types::reserved_addresses;
 
+use cita_trie::DB;
 use cita_types::{Address, H160, H256, U256};
-use cita_vm::evm::{DataProvider, InterpreterParams, InterpreterResult, OpCode};
+use cita_vm::evm::{InterpreterParams, InterpreterResult, OpCode};
+use cita_vm::DataProvider as VMDataProvider;
+
+use cita_vm::evm::DataProvider;
 
 const CHAIN_ID: &[u8] = &*b"getChainId()";
 const AUTHORITIES: &[u8] = &*b"getAuthorities(uint256)";
@@ -34,8 +38,8 @@ lazy_static! {
 pub struct ChainManagement;
 
 impl ChainManagement {
-    pub fn ext_chain_id(
-        data_provider: &mut DataProvider,
+    pub fn ext_chain_id<B: DB + 'static>(
+        data_provider: &VMDataProvider<B>,
         gas: &U256,
         sender: &Address,
     ) -> Option<(U256, U256)> {
@@ -54,8 +58,8 @@ impl ChainManagement {
         }
     }
 
-    pub fn ext_authorities(
-        data_provider: &mut DataProvider,
+    pub fn ext_authorities<B: DB + 'static>(
+        data_provider: &VMDataProvider<B>,
         gas: &U256,
         sender: &Address,
         chain_id: U256,
