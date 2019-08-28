@@ -421,90 +421,90 @@ workflows:
       #     requires:
       #     - "Check Basic"
 
-      - "Check Clippy":
-          requires:
-            - "Check Basic"
+      # - "Check Clippy":
+      #     requires:
+      #       - "Check Basic"
       - "Release":
           requires:
             - "Check Basic"
 
-      - "Basic Test":
-          requires:
-            - "Release"
-      - "Basic Tls Test":
-          requires:
-            - "Release"
+      # - "Basic Test":
+      #     requires:
+      #       - "Release"
+      # - "Basic Tls Test":
+      #     requires:
+      #       - "Release"
 
       # - "JSON-RPC Mock Test in Charge Mode":
       #     requires:
       #       - "Release"
-      - "JSON-RPC Mock Test in Quota Mode":
-          requires:
-            - "Release"
-      - "Test Transfer Value in Charge Mode":
-          requires:
-            - "Release"
-      - "Test System Features":
-          requires:
-            - "Release"
+      # - "JSON-RPC Mock Test in Quota Mode":
+      #     requires:
+      #       - "Release"
+      # - "Test Transfer Value in Charge Mode":
+      #     requires:
+      #       - "Release"
+      # - "Test System Features":
+      #     requires:
+      #       - "Release"
       # - "Test Snapshot Taking And Restoring":
       #     requires:
       #       - "Release"
-      - "Test Amend":
-          requires:
-            - "Release"
-      - "Test Executor Process Invalid Proof":
-          requires:
-            - "Release"
-
-      - "Discovery Test for network":
-          requires:
-            - "Release"
-      - "Byzantine Test in Quota Mode":
-          requires:
-            - "Release"
-      - "Byzantine Test in Charge Mode":
-          requires:
-            - "Release"
-      # - "Crosschain Test":
+      # - "Test Amend":
       #     requires:
       #       - "Release"
-      - "Robustness Test":
-          requires:
-            - "Release"
-      - "Genesis Test":
-          requires:
-            - "Release"
+      # - "Test Executor Process Invalid Proof":
+      #     requires:
+      #       - "Release"
 
-      - "Unit Test (sha3 & secp256k1)":
+      # - "Discovery Test for network":
+      #     requires:
+      #       - "Release"
+      # - "Byzantine Test in Quota Mode":
+      #     requires:
+      #       - "Release"
+      # - "Byzantine Test in Charge Mode":
+      #     requires:
+      #       - "Release"
+      - "Crosschain Test":
           requires:
             - "Release"
-      - "Unit Test (blake2b & ed25519)":
-          requires:
-            - "Unit Test (sha3 & secp256k1)"
-      - "Unit Test (sm3 & sm2)":
-          requires:
-            - "Unit Test (sha3 & secp256k1)"
+      # - "Robustness Test":
+      #     requires:
+      #       - "Release"
+      # - "Genesis Test":
+      #     requires:
+      #       - "Release"
+
+      # - "Unit Test (sha3 & secp256k1)":
+      #     requires:
+      #       - "Release"
+      # - "Unit Test (blake2b & ed25519)":
+      #     requires:
+      #       - "Unit Test (sha3 & secp256k1)"
+      # - "Unit Test (sm3 & sm2)":
+      #     requires:
+      #       - "Unit Test (sha3 & secp256k1)"
 
       - "Passed":
           requires:
-              - "Check Basic"
-              - "Check Clippy"
-              - "Release"
-              - "Basic Test"
-              - "Basic Tls Test"
-              - "JSON-RPC Mock Test in Quota Mode"
-              - "Test Transfer Value in Charge Mode"
-              - "Test System Features"
-              - "Test Amend"
-              - "Test Executor Process Invalid Proof"
-              - "Discovery Test for network"
-              - "Byzantine Test in Quota Mode"
-              - "Byzantine Test in Charge Mode"
-              - "Robustness Test"
-              - "Genesis Test"
-              - "Unit Test (blake2b & ed25519)"
-              - "Unit Test (sm3 & sm2)"
-            # - "Crosschain Test"
+              # - "Check Basic"
+              # - "Check Clippy"
+              # - "Release"
+              # - "Basic Test"
+              # - "Basic Tls Test"
+              # - "JSON-RPC Mock Test in Quota Mode"
+              # - "Test Transfer Value in Charge Mode"
+              # - "Test System Features"
+              # - "Test Amend"
+              # - "Test Executor Process Invalid Proof"
+              # - "Discovery Test for network"
+              # - "Byzantine Test in Quota Mode"
+              # - "Byzantine Test in Charge Mode"
+              # - "Robustness Test"
+              # - "Genesis Test"
+              # - "Unit Test (blake2b & ed25519)"
+              # - "Unit Test (sm3 & sm2)"
+                - "Crosschain Test"
             # - "Test Snapshot Taking And Restoring"
             # - "JSON-RPC Mock Test in Charge Mode"
