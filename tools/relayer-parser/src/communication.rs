@@ -90,7 +90,7 @@ impl RpcClient {
 
     pub fn do_post(&self, body: &str) -> Result<hyper::Chunk, Error> {
         let uri = { self.uri.read().clone() };
-        trace!("Send body {:?} to {:?}.", body, uri);
+        info!("Send body {:?} to {:?}.", body, uri);
         let mut req = hyper::Request::new(hyper::Method::Post, uri);
         req.headers_mut().set(hyper::header::ContentType::json());
         req.set_body(body.to_owned());
@@ -101,7 +101,7 @@ impl RpcClient {
         match rx.wait() {
             Ok(res) => {
                 let res = res.map_err(|_| Error::BadStatus)?;
-                trace!("Get response {:?}.", res);
+                info!("Get response {:?}.", res);
                 Ok(res)
             }
             Err(_) => Err(Error::BadStatus),
@@ -125,7 +125,7 @@ macro_rules! rpc_send_and_get_result_from_reply {
             );
             Error::Parse
         })?;
-        trace!("get reply {:?}.", reply);
+        info!("get reply {:?}.", reply);
         reply.result
     }};
 }
@@ -164,6 +164,7 @@ pub fn cita_send_transaction(
     upstream: &UpStream,
     utx: &UnverifiedTransaction,
 ) -> Result<H256, Error> {
+    info!("transaction in cita send transaction is {:?}", utx);
     let tx_bytes: Vec<u8> = utx.try_into().unwrap();
     let req = rpc_request::SendRawTransactionParams::new(tx_bytes.into()).into_request(1);
     let result = rpc_send_and_get_result_from_reply!(upstream, req, rpc_types::TxResponse);

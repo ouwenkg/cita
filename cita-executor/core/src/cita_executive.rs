@@ -528,10 +528,12 @@ impl<'a, B: DB + 'static> CitaExecutive<'a, B> {
 
     fn call(&mut self, params: &VmExecParams) -> Result<ExecutedResult, ExecutionError> {
         // Check and call Native Contract.
+        trace!("call address is {:?}", params.code_address);
         if params.code_address.unwrap()
             == Address::from_str(reserved_addresses::NATIVE_CROSS_CHAIN_VERIFY).unwrap()
         {
-            self.prepaid(&params.sender, params.gas, params.gas_price, params.value)?;
+            trace!("===> enter native cross chain verify");
+            // self.prepaid(&params.sender, params.gas, params.gas_price, params.value)?;
             // Backup used in case of running out of gas
             self.state_provider.borrow_mut().checkpoint();
             // At first, transfer value to destination.
@@ -574,6 +576,7 @@ impl<'a, B: DB + 'static> CitaExecutive<'a, B> {
                     result
                 }
             };
+            trace!("===> cross chain execution result is {:?}", result);
             Ok(result)
         } else if let Some(mut native_contract) = self
             .native_factory

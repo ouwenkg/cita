@@ -114,6 +114,7 @@ impl CrossChainVerify {
         params: &VmExecParams,
         data_provider: &mut DataProvider<B>,
     ) -> Result<InterpreterResult, NativeError> {
+        trace!("===> verify_transaction...");
         let gas_cost = U256::from(10000);
         if params.gas < gas_cost {
             return Err(NativeError::Internal("out of gas".to_string()));
@@ -227,6 +228,7 @@ impl CrossChainVerify {
         params: &VmExecParams,
         data_provider: &mut DataProvider<B>,
     ) -> Result<InterpreterResult, NativeError> {
+        trace!("===> verify state ...");
         let gas_cost = U256::from(10000);
         if params.gas < gas_cost {
             return Err(NativeError::Internal("out of gas".to_string()));
@@ -333,6 +335,7 @@ impl CrossChainVerify {
         params: &VmExecParams,
         data_provider: &mut DataProvider<B>,
     ) -> Result<InterpreterResult, NativeError> {
+        trace!("===> verify_block_header...");
         let gas_cost = U256::from(10000);
         if params.gas < gas_cost {
             return Err(NativeError::Internal("out of gas".to_string()));
@@ -433,6 +436,7 @@ impl CrossChainVerify {
         params: &VmExecParams,
         data_provider: &mut DataProvider<B>,
     ) -> Result<InterpreterResult, NativeError> {
+        trace!("===> get expected block number...");
         let gas_cost = U256::from(10000);
         if params.gas < gas_cost {
             return Err(NativeError::Internal("out of gas".to_string()));
@@ -493,6 +497,7 @@ impl CrossChainVerify {
         state_proof: StateProof,
         data_provider: &mut DataProvider<B>,
     ) -> Option<H256> {
+        trace!("state proof in verify_state_proof is {:?}", state_proof);
         let state_provider = data_provider.get_state_provider();
         let res = state_provider
             .borrow_mut()
@@ -505,6 +510,7 @@ impl CrossChainVerify {
             )
             .unwrap()
             .unwrap();
+        trace!("result in verify_state_proof is {:?}", res);
         Some(H256::from_slice(&res))
     }
 }

@@ -32,15 +32,15 @@ pub fn construct_transaction(
 
 #[inline]
 fn encode(dest_hasher: [u8; 4], tx_proof_rlp: &[u8]) -> Vec<u8> {
-    trace!("encode dest_hasher {:?}", dest_hasher);
-    trace!("encode proof_len {:?}", tx_proof_rlp.len());
-    trace!("encode proof_data {:?}", tx_proof_rlp);
+    info!("encode dest_hasher {:?}", dest_hasher);
+    info!("encode proof_len {:?}", tx_proof_rlp.len());
+    info!("encode proof_data {:?}", tx_proof_rlp);
     let encoded = ethabi::encode(&[ethabi::Token::Bytes(tx_proof_rlp.to_vec())]);
     let ret = Vec::from(&dest_hasher[..])
         .into_iter()
         .chain(encoded.into_iter())
         .collect();
-    trace!("encode result {:?}", ret);
+    info!("encode result {:?}", ret);
     ret
 }
 

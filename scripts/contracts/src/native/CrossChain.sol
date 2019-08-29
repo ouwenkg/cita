@@ -32,6 +32,20 @@ contract CrossChain {
         return crossChainRecvNonce;
     }
 
+    event LogUint(string, uint);
+    event LogAddress(string, address);
+    event LogSig(string, bytes4);
+    function logUint(string s , uint x) internal {
+        emit LogUint(s, x);
+    }
+    function logAddress(string s , address x) internal {
+        emit LogAddress(s, x);
+    }
+    function logSig(string s , bytes4 x) internal {
+        emit LogSig(s, x);
+    }
+
+
     function getFromChainId() public view returns (uint) {
         address contractAddr = chainManagerAddr;
         bytes4 funcSig = bytes4(keccak256("getChainId()"));
@@ -71,6 +85,7 @@ contract CrossChain {
         bytes memory txData
     ) {
         address recvContAddr = address(this);
+        // logAddress("recvContAddr", recvContAddr);
         bytes4 recvFuncSig;
         // solium-disable-next-line security/no-inline-assembly
         assembly {
@@ -78,21 +93,27 @@ contract CrossChain {
             calldatacopy(ptr, 0x0, 0x4)
             recvFuncSig := mload(ptr)
         }
+        // logSig("recvFuncSig", recvFuncSig);
         address contractAddr = crossChainVerifyAddr;
         bytes4 nativeFunc = bytes4(
             keccak256("verifyTransaction(address,bytes4,uint64,bytes)")
         );
+        // logSig("nativeFunc", nativeFunc);
+
         uint64 recvNonce = crossChainRecvNonce;
         // bytes len + bytes
         uint txProofSize = 0x20 + txProof.length / 0x20 * 0x20;
         if (txProof.length % 0x20 != 0) {
             txProofSize += 0x20;
         }
+        logUint("txProof.length", txProof.length);
+        logUint("txProofSize", txProofSize);
         // address + bytes pos + bytes len + bytes
         uint outSize = 0x60 + txDataSize / 0x20 * 0x20;
         if (txDataSize % 0x20 != 0) {
             outSize += 0x20;
         }
+        // logUint("outsize", outSize);
         // solium-disable-next-line security/no-inline-assembly
         assembly {
             let ptr := mload(0x40)
@@ -124,6 +145,9 @@ contract CrossChain {
                 txData := add(ptr, 0x40)
             }
         }
+        // logAddress("sender", sender);
+        // log("txData", txData);
+
         emit RecvCrossChain(sender, txData);
         crossChainRecvNonce += 1;
     }

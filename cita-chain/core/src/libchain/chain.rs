@@ -114,7 +114,9 @@ impl Decodable for TxProof {
 
 impl TxProof {
     pub fn from_bytes(bytes: &[u8]) -> Self {
-        rlp::decode(bytes)
+        let tx_proof = rlp::decode(bytes);
+        info!("tx proof in chain is {:?}", tx_proof);
+        tx_proof
     }
 
     pub fn verify(&self, authorities: &[Address]) -> bool {
@@ -162,6 +164,7 @@ impl TxProof {
     // extract info which relayer needed
     pub fn extract_relay_info(&self) -> Option<RelayInfo> {
         if self.receipt.logs.is_empty() {
+            info!("===> receipt logs is None");
             return None;
         }
         let data = &self.receipt.logs[0].data;
@@ -172,11 +175,14 @@ impl TxProof {
         // bytes4 dest_hasher,
         // uint256 cross_chain_nonce
         if data.len() != 160 {
+            info!("===> data length is not right");
             None
         } else {
             let mut iter = data.chunks(32);
             let from_chain_id = U256::from(iter.next().unwrap());
             let to_chain_id = U256::from(iter.next().unwrap());
+            info!("===> from chain id is {:?}", from_chain_id);
+            info!("===> to chain id is {:?}", to_chain_id);
             let dest_contract = Address::from(H256::from(iter.next().unwrap()));
             let dest_hasher = iter.next().unwrap()[..4].iter().take(4).enumerate().fold(
                 [0u8; 4],
@@ -185,6 +191,8 @@ impl TxProof {
                     acc
                 },
             );
+            info!("===> dest_contract is {:?}", dest_contract);
+            info!("===> dest_hasher is {:?}", dest_hasher);
             let cross_chain_nonce = U256::from(iter.next().unwrap()).low_u64();
             Some(RelayInfo {
                 from_chain_id,

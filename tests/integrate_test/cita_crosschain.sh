@@ -223,6 +223,10 @@ function get_state_proof () {
             exit 1
             ;;
     esac
+    echo "===> get state proof: chain is ${chain}"
+    echo "===> get state proof: address is ${address}"
+    echo "===> get state proof: key is ${key}"
+    echo "===> get state proof: height is ${height}"
     curl -s -X POST -d "$(printf "${JSONRPC_STATEPROOF}" "${address}" "${key}" "${height}")" \
         127.0.0.1:${port} \
         | json_get .result | cut -c 3-
@@ -362,6 +366,7 @@ function test_demo_contract () {
         "sendToSideChain" \
         "${side_chain_id}, '${SIDE_CONTRACT_ADDR}', ${crosschain_tokens_bytes}"
     local maintx=$(get_tx main)
+    title "Tx in main is ${maintx}"
 
     title "Waiting for proof."
     local height_now=$(txtool_run main block_number.py | tail -1)
@@ -404,8 +409,8 @@ EOF
     local tx_block_number=$(hex2dec $(get_tx_block_number side ${sidetx}))
     title "Got tx_block_number ${tx_block_number}"
     # 3 is position of balanceOf in contract scripts/contracts/tests/contracts/cross_chain_token.sol
-    local state_proof=$(get_state_proof side ${SIDE_CONTRACT_ADDR} $(map_key_encode "000000000000000000000000${PADDR}" "0000000000000000000000000000000000000000000000000000000000000003") ${tx_block_number})
-    title "Got state_proof ${state_proof}"
+    # local state_proof=$(get_state_proof side ${SIDE_CONTRACT_ADDR} $(map_key_encode "000000000000000000000000${PADDR}" "0000000000000000000000000000000000000000000000000000000000000003") ${tx_block_number})
+    # title "Got state_proof ${state_proof}"
 
     title "Check balance for both chains after crosschain transaction."
     data=$(printf "%64s" "${PADDR}" | tr ' ' '0')
@@ -469,6 +474,7 @@ EOF
     assert_equal $((side_tokens+crosschain_tokens)) \
         "$(hex2dec "0x${result:130:194}")" \
         "The balance is not right for state proof."
+    assert_equal 0 1
 }
 
 function main () {

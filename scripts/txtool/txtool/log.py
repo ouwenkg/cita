@@ -49,7 +49,7 @@ def replaceLogRecord():
 replaceLogRecord()
 
 with open('config/logging.yml', 'r') as f_conf:
-    dict_conf = yaml.load(f_conf, Loader=yaml.FullLoader)
+    dict_conf = yaml.load(f_conf)
 
 logging.config.dictConfig(dict_conf)
 
