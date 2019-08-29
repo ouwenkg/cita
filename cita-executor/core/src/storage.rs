@@ -441,7 +441,7 @@ mod tests {
     #[test]
     fn test_array_with_sub_array() {
         let mut data_provider = DataProviderMock::default();
-        let mut array = Array::new(H256::from(0));
+        let array = Array::new(H256::from(0));
         let code_address = Address::from_str("ffffffffffffffffffffffffffffffffffffffff").unwrap();
 
         // 1) length = 7
@@ -584,7 +584,7 @@ mod tests {
     #[test]
     fn test_map_with_sub_array() {
         let mut data_provider = DataProviderMock::default();
-        let mut map = Map::new(H256::from(1));
+        let map = Map::new(H256::from(1));
         let code_address = Address::from_str("ffffffffffffffffffffffffffffffffffffffff").unwrap();
 
         // 1) map["key1"]["key2"] = "1234567890"

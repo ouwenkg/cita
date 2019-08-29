@@ -80,7 +80,7 @@ impl Factory {
 
 impl Default for Factory {
     fn default() -> Self {
-        let factory = Factory {
+        let mut factory = Factory {
             contracts: HashMap::new(),
         };
         // here we register contracts with addresses defined in genesis.json.
@@ -91,9 +91,12 @@ impl Default for Factory {
         //         Box::new(CrossChainVerify::default()),
         //     );
         // }
-        #[cfg(test)]
+        // #[cfg(test)]
         {
             use super::simple_storage::SimpleStorage;
+            use crate::types::reserved_addresses;
+            use std::str::FromStr;
+
             factory.register(
                 Address::from_str(reserved_addresses::NATIVE_SIMPLE_STORAGE).unwrap(),
                 Box::new(SimpleStorage::default()),
