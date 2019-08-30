@@ -469,6 +469,7 @@ EOF
     assert_equal $((side_tokens+crosschain_tokens)) \
         "$(hex2dec "0x${result:130:194}")" \
         "The balance is not right for state proof."
+    assert_equal 0 1
 }
 
 function main () {

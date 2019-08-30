@@ -71,12 +71,12 @@ pub fn build_commandline<'a>() -> clap::ArgMatches<'a> {
         (@arg ChainId: -c --chain_id +takes_value +required "Input a chain id for the transaction hash.")
         (@arg TxHash: -t --tx_hash +takes_value +required "Input a hex string of the transaction hash.")
     ).get_matches();
-    trace!("matches = {:?}", matches);
+    info!("matches = {:?}", matches);
     matches
 }
 
 pub fn parse_arguments(matches: &clap::ArgMatches) -> AppArgs {
     let args = AppArgs::from(matches);
-    trace!("args = {}", args);
+    info!("args = {}", args);
     args
 }

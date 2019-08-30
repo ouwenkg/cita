@@ -36,7 +36,9 @@ use arguments::{build_commandline, parse_arguments};
 use configuration::{parse_configfile, UpStream};
 
 fn main() {
-    logger::init();
+    // logger::init();
+    logger::init_config(&logger::LogFavour::File("relayer"));
+    info!("CITA: Relayer");
 
     let matches = build_commandline();
     let args = parse_arguments(&matches);
@@ -88,12 +90,12 @@ fn fetch_txproof(servers: &[UpStream], tx_hash: H256) -> Option<Vec<u8>> {
 
 #[inline]
 fn deconstruct_txproof(tx_proof_rlp: &[u8]) -> Option<RelayInfo> {
-    trace!("proof_len {:?}", tx_proof_rlp.len());
-    trace!("proof_data {:?}", tx_proof_rlp);
+    info!("proof_len {:?}", tx_proof_rlp.len());
+    info!("proof_data {:?}", tx_proof_rlp);
     let tx_proof = TxProof::from_bytes(tx_proof_rlp);
-    trace!("The input tx_proof is {:?}.", tx_proof);
+    info!("The input tx_proof is {:?}.", tx_proof);
     tx_proof.extract_relay_info().map(|relay_info| {
-        trace!("relay_info {:?}", relay_info);
+        info!("relay_info {:?}", relay_info);
         relay_info
     })
 }
