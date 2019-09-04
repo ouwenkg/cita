@@ -137,7 +137,7 @@ contract CrossChain {
                 mstore(ptrL, mload(txProofL))
             }
             let inSize := sub(ptrL, ptr)
-            switch call(100000, contractAddr, 0, ptr, inSize, ptr, outSize)
+            switch call(500000, contractAddr, 0, ptr, inSize, ptr, outSize)
             case 0 { revert(0, 0) }
             default {
                 // return(ptr, outSize)
