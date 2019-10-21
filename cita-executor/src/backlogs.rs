@@ -226,6 +226,7 @@ impl Backlogs {
         let block_height = wrap_height(open_block.number() as usize);
         if block_height != (self.get_current_height() + 1) {
             warn!("executor had received {}=th blockWithProof", block_height);
+            return false;
         }
         let previous_proof = open_block.proof().clone();
         let previous_bft_proof: proof::BftProof = previous_proof.clone().into();
